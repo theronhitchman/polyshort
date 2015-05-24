@@ -50,3 +50,12 @@ class PlanarPolygon(SageObject):
         x0, y0 = self.vertex_list[m-1][0], self.vertex_list[m-1][1]
         xcoord, ycoord = x1 - x0, y1 - y0
         return vector([xcoord, ycoord])
+
+    def side_length(self,k):
+        """
+        Return length of side joining vertex k-1 to vertex k.
+
+        Indexing is cyclic, so k can be any integer.
+        """
+        assert isinstance(k, Integer), "Argument must be an integer"
+        return self.side_as_vector(k).norm()
