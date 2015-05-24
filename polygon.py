@@ -44,7 +44,7 @@ class PlanarPolygon(SageObject):
 
         Indexing is cyclic, so k can be any integer.
         """
-        assert isinstance(k, Integer), "Argument must be an integer"
+        #assert isinstance(k, Integer), "Argument must be an integer"
         m = k % self.number_sides
         x1, y1 = self.vertex_list[m][0], self.vertex_list[m][1]
         x0, y0 = self.vertex_list[m-1][0], self.vertex_list[m-1][1]
@@ -57,5 +57,17 @@ class PlanarPolygon(SageObject):
 
         Indexing is cyclic, so k can be any integer.
         """
-        assert isinstance(k, Integer), "Argument must be an integer"
+        #assert isinstance(k, Integer), "Argument must be an integer"
         return self.side_as_vector(k).norm()
+
+    def perimeter(self):
+        """
+        Return the sum of lengths of sides of the polygon.
+        """
+        return sum(self.side_length(k) for k in range(self.number_sides))
+
+    def tangent_vector(self,k):
+        """
+        Return the unit vector in the direction of side with given index.
+        """
+        return self.side_as_vector(k).normalized()
