@@ -13,7 +13,7 @@ EXAMPLES::
 """
 
 #*****************************************************************************
-#       Copyright (C) 2015 YOUR NAME Theron J Hitchman
+#       Copyright (C) 2015 Theron J Hitchman
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,7 +38,15 @@ class PlanarPolygon(SageObject):
         return "A %d sided polygon with vertices at " % self.number_sides \
         + ", ".join(str(vert) for vert in self.vertex_list)
 
+    def side_as_vector(self,k):
+        """
+        Return side joining vertex k-1 to vertex k as a vector.
 
-
-
-    #def sidelength(self,k):
+        Indexing is cyclic, so k can be any integer.
+        """
+        assert isinstance(k, Integer), "Argument must be an integer"
+        m = k % self.number_sides
+        x1, y1 = self.vertex_list[m][0], self.vertex_list[m][1]
+        x0, y0 = self.vertex_list[m-1][0], self.vertex_list[m-1][1]
+        xcoord, ycoord = x1 - x0, y1 - y0
+        return vector([xcoord, ycoord])
