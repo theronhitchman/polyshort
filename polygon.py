@@ -71,3 +71,15 @@ class PlanarPolygon(SageObject):
         Return the unit vector in the direction of side with given index.
         """
         return self.side_as_vector(k).normalized()
+
+    def exterior_angle(self,k):
+        """
+        Return the radian measure of the exterior angle at the given vertex.
+        """
+        return arccos(self.tangent_vector(k-1).inner_product(self.tangent_vector(k)))
+
+    def exterior_angle_degrees(self,k,num_digits=10):
+        """
+        Return the degree measure of the exterior angle at the given vertex.
+        """
+        return ((180*self.exterior_angle(k))/pi).n(digits=num_digits)
