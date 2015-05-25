@@ -76,10 +76,41 @@ class PlanarPolygon(SageObject):
         """
         Return the radian measure of the exterior angle at the given vertex.
         """
-        return arccos(self.tangent_vector(k-1).inner_product(self.tangent_vector(k)))
+        return arccos(self.tangent_vector(k+1).inner_product(self.tangent_vector(k)))
 
     def exterior_angle_degrees(self,k,num_digits=10):
         """
         Return the degree measure of the exterior angle at the given vertex.
         """
         return ((180*self.exterior_angle(k))/pi).n(digits=num_digits)
+
+    def curvature_vector(self,k):
+        """
+        Return the curvature vector at the given vertex.
+        """
+        return self.tangent_vector(k+1) - self.tangent_vector(k)
+
+    def curvature(self,k):
+        """
+        Return the curvature at the given vertex.
+        """
+        return norm(self.curvature_vector(k))
+
+    def visual(self):
+        """
+        Return graphics object which contains a plot of the polygon.
+        """
+        return line(self.vertex_list + [self.vertex_list[0]])
+
+    def visual_with_curvatures(self):
+        """
+        Return graphics object which contains a plot of the polygon and its
+        curvature vectors, located at the appropriate vertices.
+        """
+        G = Graphics()
+        G += self.visual()
+        for k in range(self.number_sides):
+            G += arrow(self.vertex_list[k], vector(self.vertex_list[k]) +
+                                                self.curvature_vector(k),
+                       color='red', linestyle=":")
+        return G
