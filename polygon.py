@@ -110,7 +110,7 @@ class PlanarPolygon(SageObject):
         G = Graphics()
         G += self.visual()
         for k in range(self.number_sides):
-            G += arrow(self.vertex_list[k], vector(self.vertex_list[k]) +
-                                                self.curvature_vector(k),
+            G += arrow(self.vertex_list[k],
+                       vector(self.vertex_list[k]) + self.curvature_vector(k),
                        color='red', linestyle=":")
         return G
