@@ -38,18 +38,22 @@ class PlanarPolygon(SageObject):
         return "A %d sided polygon with vertices at " % self.number_sides \
         + ", ".join(str(vert) for vert in self.vertex_list)
 
+    def vertex_as_vector(self,k):
+        """
+        Return vertex with given index as a vector.
+
+        Indexing is cyclic, so input can be any integer.
+        """
+        m = k % self.number_sides
+        return vector(self.vertex_list[m])
+
     def side_as_vector(self,k):
         """
         Return side joining vertex k-1 to vertex k as a vector.
 
         Indexing is cyclic, so k can be any integer.
         """
-        #assert isinstance(k, Integer), "Argument must be an integer"
-        m = k % self.number_sides
-        x1, y1 = self.vertex_list[m][0], self.vertex_list[m][1]
-        x0, y0 = self.vertex_list[m-1][0], self.vertex_list[m-1][1]
-        xcoord, ycoord = x1 - x0, y1 - y0
-        return vector([xcoord, ycoord])
+        return self.vertex_as_vector(k) - self.vertex_as_vector(k-1)
 
     def side_length(self,k):
         """
@@ -114,3 +118,39 @@ class PlanarPolygon(SageObject):
                        vector(self.vertex_list[k]) + self.curvature_vector(k),
                        color='red', linestyle=":")
         return G
+
+    def side_normal(self,k):
+        """
+        Return vector normal to given side.
+        """
+        w = self.side_as_vector(k)
+        return vector([-w[1],w[0]])
+
+
+    def side_functional(self,k):
+        """
+        Return linear functional that vanishes along side k.
+        """
+        return lambda x,y : self.side_normal(k).dot_product(vector([x,y])-vector(S.vertex_list[k-1]))
+
+    def side_is_support(self,k):
+        """
+        Return a Boolean indicating if the given side supports the polygon.
+        """
+        f = self.side_functional(k)
+        for l in range(self.number_sides):
+            x = self.vertex_list[l]
+            for m in range(l,self.number_sides):
+                y = self.vertex_list[m]
+                if f(x[0],x[1]) * f(y[0],y[1]) < 0:
+                    return False
+        return True
+
+    def is_convex(self):
+        """
+        Returns a Boolean indicating if the polygon is convex.
+        """
+        for k in range(self.number_sides):
+            if not self.side_is_support(k):
+                return False
+        return True
