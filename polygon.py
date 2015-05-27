@@ -154,3 +154,18 @@ class PlanarPolygon(SageObject):
             if not self.side_is_support(k):
                 return False
         return True
+
+    def vertices_to_list(self):
+        """
+        Returns a flat list of coordinates for the vertices of the polygon.
+        """
+        flat_list = []
+        for vert in self.vertex_list:
+            flat_list += [vert[0],vert[1]]
+        return flat_list
+
+    def bundled_curvature_list(self):
+        curv_list = []
+        for m in range(self.number_sides):
+            curv_list += [self.curvature_vector(m)[0], self.curvature_vector(m)[1]]
+        return curv_list
