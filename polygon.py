@@ -92,7 +92,7 @@ class PlanarPolygon(SageObject):
         """
         Return the curvature vector at the given vertex.
         """
-        return self.tangent_vector(k+1) - self.tangent_vector(k)
+        return 2*(self.tangent_vector(k+1) - self.tangent_vector(k))/(self.side_length(k+1) + self.side_length(k))
 
     def curvature(self,k):
         """
@@ -169,3 +169,14 @@ class PlanarPolygon(SageObject):
         for m in range(self.number_sides):
             curv_list += [self.curvature_vector(m)[0], self.curvature_vector(m)[1]]
         return curv_list
+
+def list_to_two_tuples(lst):
+    """
+    Process a flat list to a list of 2-tuples.
+    """
+    assert(len(lst) % 2 == 0)
+    verts = []
+    if len(lst) == 2:
+        return [(lst[0],lst[1])]
+    else:
+        return [(lst[0],lst[1])] + list_to_two_tuples(lst[2:])
