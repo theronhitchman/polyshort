@@ -131,7 +131,7 @@ class PlanarPolygon(SageObject):
         """
         Return linear functional that vanishes along side k.
         """
-        return lambda x,y : self.side_normal(k).dot_product(vector([x,y])-vector(S.vertex_list[k-1]))
+        return lambda x,y : self.side_normal(k).dot_product(vector([x,y])-vector(self.vertex_list[k-1]))
 
     def side_is_support(self,k):
         """
