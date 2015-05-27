@@ -174,7 +174,7 @@ def list_to_two_tuples(lst):
     """
     Process a flat list to a list of 2-tuples.
     """
-    assert(len(lst) % 2 == 0)
+    assert(len(lst) % 2 == 0), "list must have an even number of elements"
     verts = []
     if len(lst) == 2:
         return [(lst[0],lst[1])]
@@ -182,7 +182,21 @@ def list_to_two_tuples(lst):
         return [(lst[0],lst[1])] + list_to_two_tuples(lst[2:])
 
 curvature_coordinate0 = \
-'-2*((y[{0}] - y[{2}])/sqrt((y[{0}] - y[{2}])^2 + (y[{1}] - y[{3}])^2) + (y[{0}] - y[{4}])/sqrt((y[{0}] - y[{4}])^2 + (y[{1}] - y[{5}])^2))/(sqrt((y[{0}] - y[{2}])^2 + (y[{1}] - y[{3}])^2) + sqrt((y[{0}] - y[{4}])^2 + (y[{1}] - y[{5}])^2))'
+'2*((y[{4}] - y[{2}])/sqrt((y[{4}] - y[{2}])^2 + (y[{5}] - y[{3}])^2) - (y[{2}] - y[{0}])/sqrt((y[{2}] - y[{0}])^2 + (y[{3}] - y[{1}])^2))/(sqrt((y[{4}] - y[{2}])^2 + (y[{5}] - y[{3}])^2) + sqrt((y[{2}] - y[{0}])^2 + (y[{3}] - y[{1}])^2))'
 
-curvature_coordiate1 = \
-'-2*((y[{1}] - y[{3}])/sqrt((y[{0}] - y[{2}])^2 + (y[{1}] - y[{3}])^2) + (y[{1}] - y[{5}])/sqrt((y[{0}] - y[{4}])^2 + (y[{1}] - y[{5}])^2))/(sqrt((y[{0}] - y[{2}])^2 + (y[{1}] - y[{3}])^2) + sqrt((y[{0}] - y[{4}])^2 + (y[{1}] - y[{5}])^2))'
+curvature_coordinate1 = \
+'2*((y[{5}] - y[{3}])/sqrt((y[{4}] - y[{2}])^2 + (y[{5}] - y[{3}])^2) - (y[{3}] - y[{1}])/sqrt((y[{2}] - y[{0}])^2 + (y[{3}] - y[{1}])^2))/(sqrt((y[{4}] - y[{2}])^2 + (y[{5}] - y[{3}])^2) + sqrt((y[{2}] - y[{0}])^2 + (y[{3}] - y[{1}])^2))'
+
+curvature_vector_pair = curvature_coordinate0 + ', ' + curvature_coordinate1
+
+def incenter_odes_str(num_verts):
+    """
+    Returns a string used to construct the ODE's defining the incenter flow for
+    a planar polygon with `num` sides.
+    """
+    m = 2*num_verts
+    ode_list = '[' + curvature_vector_pair.format(str(m-2),str(m-1),str(0),str(1),str(2),str(3))
+    for ind in range(1,num_verts-1):
+        ode_list += ', ' + curvature_vector_pair.format(str(2*ind-2),str(2*ind-1),str(2*ind),str(2*ind+1),str(2*ind+2),str(2*ind+3))
+    ode_list += ', ' + curvature_vector_pair.format(str(m-4),str(m-3),str(m-2),str(m-1),str(0),str(1)) + ']'
+    return ode_list
