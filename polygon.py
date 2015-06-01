@@ -100,19 +100,19 @@ class PlanarPolygon(SageObject):
         """
         return norm(self.curvature_vector(k))
 
-    def visual(self):
+    def visual(self, aspect_ratio=1, **kwds):
         """
         Return graphics object which contains a plot of the polygon.
         """
-        return line(self.vertex_list + [self.vertex_list[0]])
+        return line(self.vertex_list + [self.vertex_list[0]], aspect_ratio=aspect_ratio, **kwds)
 
-    def visual_with_curvatures(self):
+    def visual_with_curvatures(self, **kwds):
         """
         Return graphics object which contains a plot of the polygon and its
         curvature vectors, located at the appropriate vertices.
         """
         G = Graphics()
-        G += self.visual()
+        G += self.visual(**kwds)
         for k in range(self.number_sides):
             G += arrow(self.vertex_list[k],
                        vector(self.vertex_list[k]) + self.curvature_vector(k),
@@ -169,6 +169,32 @@ class PlanarPolygon(SageObject):
         for m in range(self.number_sides):
             curv_list += [self.curvature_vector(m)[0], self.curvature_vector(m)[1]]
         return curv_list
+
+    def compute_flow(self, t_span=[0,1],num_points=1000,**kwds):
+        """
+        Return a a list of the form [(t0,[y0,...,yn]),...] containing solution
+        data from running the incenter curvature flow on the polygon.
+        """
+        ODE = ode_solver()
+        ODE.y_0 = self.vertices_to_list()
+        ODE.function = sageobj('lambda t,y: '+incenter_odes_str(self.number_sides))
+        ODE.ode_solve(t_span=t_span, num_points=num_points,**kwds)
+        return ODE.solution
+
+    def animate_flow(self, t_span=[0,1],num_points=1000,**kwds):
+        """
+        Returns an animation of the incenter flow.
+        """
+        raw_sols = self.compute_flow(t_span=t_span, num_points=num_points)
+        xs = [x for (x,y) in self.vertex_list]
+        ys = [y for (x,y) in self.vertex_list]
+        xM, xm = max(x for x in xs), min(x for x in xs)
+        yM, ym = max(y for y in ys), min(y for y in ys)
+        pics = [PlanarPolygon(list_to_two_tuples(raw_sols[k][1])).visual_with_curvatures(xmin=xm,xmax=xM,ymin=ym,ymax=yM) for k in range(num_points)]
+        the_show = animate(pics)
+        return the_show
+
+# Helper Functions used to set up the solution of differential equations.
 
 def list_to_two_tuples(lst):
     """
