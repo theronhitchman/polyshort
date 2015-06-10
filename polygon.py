@@ -173,17 +173,17 @@ class PlanarPolygon(SageObject):
     def compute_flow(self, t_span=[0,1],num_points=1000,**kwds):
         """
         Return a a list of the form [(t0,[y0,...,yn]),...] containing solution
-        data from running the incenter curvature flow on the polygon.
+        data from running the rhombic curvature flow on the polygon.
         """
         ODE = ode_solver()
         ODE.y_0 = self.vertices_to_list()
-        ODE.function = sageobj('lambda t,y: '+incenter_odes_str(self.number_sides))
+        ODE.function = sageobj('lambda t,y: '+rhombic_odes_str(self.number_sides))
         ODE.ode_solve(t_span=t_span, num_points=num_points,**kwds)
         return ODE.solution
 
     def animate_flow(self, t_span=[0,1],num_points=1000,**kwds):
         """
-        Returns an animation of the incenter flow.
+        Returns an animation of the rhombic flow.
         """
         raw_sols = self.compute_flow(t_span=t_span, num_points=num_points)
         xs = [x for (x,y) in self.vertex_list]
@@ -215,9 +215,9 @@ curvature_coordinate1 = \
 
 curvature_vector_pair = curvature_coordinate0 + ', ' + curvature_coordinate1
 
-def incenter_odes_str(num_verts):
+def rhombic_odes_str(num_verts):
     """
-    Returns a string used to construct the ODE's defining the incenter flow for
+    Returns a string used to construct the ODE's defining the rhombic flow for
     a planar polygon with `num` sides.
     """
     m = 2*num_verts
